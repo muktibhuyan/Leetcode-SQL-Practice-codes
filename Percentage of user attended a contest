@@ -1,0 +1,40 @@
+WITH total_users AS (
+SELECT count(DISTINCT user_id) as total
+    FROM Users
+)
+SELECT DISTINCT
+    contest_id,
+    ROUND(COUNT(user_id) OVER(PARTITION BY contest_id) * 100.0 / total, 2) as percentage
+FROM Register, total_users
+ORDER BY
+    percentage DESC,
+    contest_id;
+
+
+Solution 1:
+WITH total_users AS (
+    SELECT COUNT(DISTINCT user_id) AS total
+    FROM Users
+)
+SELECT DISTINCT
+    R.contest_id,
+    ROUND(COUNT(R.user_id) * 100.0 / T.total, 2) AS percentage
+FROM Register R
+CROSS JOIN total_users T
+GROUP BY R.contest_id, T.total
+ORDER BY percentage DESC, R.contest_id;
+
+
+
+Solution 2 :
+WITH total_users AS (
+SELECT count(DISTINCT user_id) as total
+    FROM Users
+)
+SELECT DISTINCT
+    contest_id,
+    ROUND(COUNT(user_id) OVER(PARTITION BY contest_id) * 100.0 / total, 2) as percentage
+FROM Register, total_users
+ORDER BY
+    percentage DESC,
+    contest_id;
